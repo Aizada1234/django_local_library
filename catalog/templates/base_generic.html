@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Библиотека{% endblock %}</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background: #4a90e2;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0 0 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        nav a:hover {
+            opacity: 0.8;
+        }
+        .auth {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .auth a {
+            color: #fff;
+            text-decoration: underline;
+        }
+        main {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #777;
+            background: #e9eef3;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 Local Library</h1>
+
+        <nav>
+            <ul>
+              <li><a href="{% url 'index' %}">Главная</a></li>
+              <li><a href="{% url 'books' %}">Все книги</a></li>
+              {% if user.is_staff %}
+                <li><a href="/admin/">Админ-панель</a></li>
+              {% endif %}
+            </ul>
+          </nav>
+          
+
+        <!-- 🔐 Блок авторизации -->
+        <div class="auth">
+            {% if user.is_authenticated %}
+            <li>Вы вошли как: {{ user.get_username }}</li>
+            <li><a href="{% url 'my-borrowed' %}">Мои книги</a></li>
+            {% if perms.catalog.can_mark_returned %}
+              <li><a href="{% url 'all-borrowed' %}">Все заимствованные книги</a></li>
+            {% endif %}
+            <li><a href="{% url 'logout' %}?next={{ request.path }}">Выйти</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}?next={{ request.path }}">Войти</a></li>
+          {% endif %}
+          
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        &copy; {{ now|date:"Y" }} Local Library — Все права защищены
+    </footer>
+</body>
+</html>
